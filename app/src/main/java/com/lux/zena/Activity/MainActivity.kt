@@ -20,7 +20,7 @@ import java.io.InputStream
 class MainActivity : AppCompatActivity() {
 
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    lateinit var uri: Uri
+    lateinit var mlText:String
 
     fun getRealPathFromUri(uri:Uri) : String{
         val proj= arrayOf(MediaStore.Images.Media.DATA)
@@ -44,18 +44,23 @@ class MainActivity : AppCompatActivity() {
             TedImagePicker.with(this)
                 .mediaType(MediaType.IMAGE)
                 .start {
-                    uri = it
+                    val image:InputImage = InputImage.fromFilePath(this,it)
+                    recognizer.process(image)
+                        .addOnSuccessListener { result->
+                            Log.e("SUCCESS","$result")
+                            mlText= result.toString()
+                        }
+                        .addOnFailureListener { e->
+                            Log.e("FAIL","error : $e")
+                        }
                 }
         }
 
-        val image:InputImage = InputImage.fromFilePath(this,uri)
-        val result = recognizer.process(image)
-            .addOnSuccessListener {
-                Log.e("SUCCESS","${it.text}")
-            }
-            .addOnFailureListener { e->
-                Log.e("FAIL","error : $e")
-            }
+        binding.btnRecogText.setOnClickListener {
+            binding.tv.text = mlText
+        }
+
+
     }
 
 
