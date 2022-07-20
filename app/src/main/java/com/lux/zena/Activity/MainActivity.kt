@@ -11,9 +11,12 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeechService
 import android.util.Log
 import androidx.loader.content.CursorLoader
+import com.google.mlkit.nl.languageid.LanguageIdentification
+import com.google.mlkit.nl.languageid.LanguageIdentifier
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.lux.zena.Activity.databinding.ActivityMainBinding
 import gun0912.tedimagepicker.builder.TedImagePicker
@@ -44,6 +47,8 @@ class MainActivity : AppCompatActivity() {
 
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
+    val recognizerKor = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+
     fun setImage (uri:Uri) {
         var cr  = contentResolver.openInputStream(uri)!!
         val bitmap = BitmapFactory.decodeStream(cr)
@@ -62,24 +67,35 @@ class MainActivity : AppCompatActivity() {
             TedImagePicker.with(this)
                 .mediaType(MediaType.IMAGE)
                 .start {
-                    setImage(it)
+                    //setImage(it)
+                    binding.iv.setImageURI(it)
+                    image= InputImage.fromFilePath(this,it)
                 }
         }
 
         binding.btnRecogText.setOnClickListener {
-                val result=recognizer.process(image)
-                        .addOnSuccessListener {     result->
-                            Log.e("SUCCESS","${result.text}")
-                            mlText= result.text
-                            binding.tv.text = mlText
-                        }
-                        .addOnFailureListener {     e->
-                            Log.e("FAIL","error : $e")
-                        }
-                if (result.isComplete) {
-                    Log.e("RESULT","${result.result}")
-                    binding.tv.text=result.result.toString()
-                }else Log.e("TASK","is not yet complete")
+//                val result=recognizer.process(image)
+//                        .addOnSuccessListener {     result->
+//                            Log.e("SUCCESS","${result.text}")
+//                            mlText= result.text
+//                            binding.tv.text = mlText
+//                        }
+//                        .addOnFailureListener {     e->
+//                            Log.e("FAIL","error : $e")
+//                        }
+            val result = recognizerKor.process(image)
+                .addOnSuccessListener { result->
+                    Log.e("SUCCESS","${result.text}")
+                    mlText = result.text
+                    binding.tv.text = mlText
+                }
+                .addOnFailureListener { e->
+                    Log.e("FAIL","error : $e")
+                }
+            if (result.isComplete) {
+                Log.e("RESULT","${result.result}")
+                binding.tv.text=result.result.toString()
+            }else Log.e("TASK","is not yet complete")
         }
 
         tts = TextToSpeech(this, TextToSpeech.OnInitListener { status->
@@ -99,6 +115,8 @@ class MainActivity : AppCompatActivity() {
             tts.setSpeechRate(1.0f)
             tts.speak(mlText,TextToSpeech.QUEUE_FLUSH,null)
         }
+
+
 
 
 
