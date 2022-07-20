@@ -1,6 +1,8 @@
 package com.lux.zena.Activity
 
+import android.content.ContentResolver
 import android.database.Cursor
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,6 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     lateinit var mlText:String
+    lateinit var image: InputImage
 
     fun getRealPathFromUri(uri:Uri) : String{
         val proj= arrayOf(MediaStore.Images.Media.DATA)
@@ -35,6 +38,15 @@ class MainActivity : AppCompatActivity() {
 
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
+    fun setImage (uri:Uri) {
+        var cr  = contentResolver.openInputStream(uri)!!
+        val bitmap = BitmapFactory.decodeStream(cr)
+        binding.iv.setImageBitmap(bitmap)
+
+        image = InputImage.fromBitmap(bitmap,0)
+        Log.e("setImage","Bitmap")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_main)
@@ -44,20 +56,28 @@ class MainActivity : AppCompatActivity() {
             TedImagePicker.with(this)
                 .mediaType(MediaType.IMAGE)
                 .start {
-                    val image:InputImage = InputImage.fromFilePath(this,it)
-                    recognizer.process(image)
-                        .addOnSuccessListener { result->
-                            Log.e("SUCCESS","$result")
-                            mlText= result.toString()
-                        }
-                        .addOnFailureListener { e->
-                            Log.e("FAIL","error : $e")
-                        }
+                    setImage(it)
                 }
         }
 
         binding.btnRecogText.setOnClickListener {
-            binding.tv.text = mlText
+                val result=recognizer.process(image)
+                        .addOnSuccessListener {     result->
+                            Log.e("SUCCESS","${result.text}")
+                            mlText= result.text
+                            binding.tv.text = mlText
+                        }
+                        .addOnFailureListener {     e->
+                            Log.e("FAIL","error : $e")
+                        }
+                if (result.isComplete) {
+                    Log.e("RESULT","${result.result}")
+                    binding.tv.text=result.result.toString()
+                }else Log.e("TASK","is not yet complete")
+
+
+
+
         }
 
 
