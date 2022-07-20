@@ -52,6 +52,9 @@ dependencies {
     // ML Kit Korean
     implementation 'com.google.mlkit:text-recognition-korean:16.0.0-beta4'
 
+    //ML Kit Objects
+    implementation 'com.google.mlkit:object-detection:17.0.0'
+
     // ML Kit 다국어 지원
     implementation 'com.google.mlkit:language-id:17.0.4'
 

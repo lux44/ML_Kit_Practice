@@ -14,6 +14,8 @@ import androidx.loader.content.CursorLoader
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.languageid.LanguageIdentifier
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.objects.ObjectDetection
+import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
@@ -33,7 +35,6 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var tts:TextToSpeech
 
-
     fun getRealPathFromUri(uri:Uri) : String{
         val proj= arrayOf(MediaStore.Images.Media.DATA)
         val loader: CursorLoader =CursorLoader(this,uri,proj,null,null,null)
@@ -49,14 +50,19 @@ class MainActivity : AppCompatActivity() {
 
     val recognizerKor = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
-    fun setImage (uri:Uri) {
-        var cr  = contentResolver.openInputStream(uri)!!
-        val bitmap = BitmapFactory.decodeStream(cr)
-        binding.iv.setImageBitmap(bitmap)
+    val options = ObjectDetectorOptions.Builder()
+        .setDetectorMode(ObjectDetectorOptions.SINGLE_IMAGE_MODE)
+        .enableClassification()
+        .build()
 
-        image = InputImage.fromBitmap(bitmap,0)
-        Log.e("setImage","Bitmap")
-    }
+//    fun setImage (uri:Uri) {
+//        var cr  = contentResolver.openInputStream(uri)!!
+//        val bitmap = BitmapFactory.decodeStream(cr)
+//        binding.iv.setImageBitmap(bitmap)
+//
+//        image = InputImage.fromBitmap(bitmap,0)
+//        Log.e("setImage","Bitmap")
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,6 +122,19 @@ class MainActivity : AppCompatActivity() {
             tts.speak(mlText,TextToSpeech.QUEUE_FLUSH,null)
         }
 
+
+
+        binding.btnRecogObj.setOnClickListener {
+            Log.e("BUTTON","start detect object")
+            val objectDetct=ObjectDetection.getClient(options)
+                .process(image)
+                .addOnSuccessListener {
+                    Log.e("OBJECT SUCCESS","${it[0]}")
+                }
+                .addOnFailureListener{  e->
+                    Log.e("OBJECT FAIL","fail object detect : $e")
+                }
+        }
 
 
 
