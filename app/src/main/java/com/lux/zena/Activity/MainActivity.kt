@@ -126,8 +126,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnRecogObj.setOnClickListener {
             Log.e("BUTTON","start detect object")
-            val objectDetct=ObjectDetection.getClient(options)
-                .process(image)
+            objectDetect.process(image)
                 .addOnSuccessListener {
                     Log.e("OBJECT SUCCESS","${it[0]}")
                 }
@@ -143,6 +142,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+    val objectDetect=ObjectDetection.getClient(options)
 
 
 
