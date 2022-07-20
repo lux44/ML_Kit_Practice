@@ -27,16 +27,34 @@
         android:id="@+id/iv"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_centerInParent="true"/>
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/btn_recog_text"/>
 
     <TextView
         android:id="@+id/tv"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="100dp"
         android:text="asdfasdfasfasdf"
         android:textColor="@color/black"
         android:textSize="16dp"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/iv"
         android:layout_margin="8dp"/>
+    <Button
+        android:id="@+id/btn_tts_1"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:backgroundTint="@color/purple"
+        android:layout_below="@id/tv"
+        android:layout_marginRight="10dp"
+        android:text="01"/>
+    <Button
+        android:id="@+id/btn_tts_2"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:backgroundTint="@color/purple"
+        android:layout_below="@id/tv"
+        android:layout_toRightOf="@id/btn_tts_1"
+        android:layout_marginRight="10dp"
+        android:text="02"/>
 
 </RelativeLayout>
