@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeechService
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import androidx.loader.content.CursorLoader
 import com.google.mlkit.nl.languageid.LanguageIdentification
@@ -35,39 +36,22 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var tts:TextToSpeech
 
-    fun getRealPathFromUri(uri:Uri) : String{
-        val proj= arrayOf(MediaStore.Images.Media.DATA)
-        val loader: CursorLoader =CursorLoader(this,uri,proj,null,null,null)
-        val cursor: Cursor? =loader.loadInBackground()
-        val column_index:Int= cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        cursor.moveToFirst()
-        val result:String=cursor.getString(column_index)
-        cursor.close()
-        return result
-    }
-
-    val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
     val recognizerKor = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
-    val options = ObjectDetectorOptions.Builder()
-        .setDetectorMode(ObjectDetectorOptions.SINGLE_IMAGE_MODE)
-        .enableClassification()
-        .build()
 
-//    fun setImage (uri:Uri) {
-//        var cr  = contentResolver.openInputStream(uri)!!
-//        val bitmap = BitmapFactory.decodeStream(cr)
-//        binding.iv.setImageBitmap(bitmap)
-//
-//        image = InputImage.fromBitmap(bitmap,0)
-//        Log.e("setImage","Bitmap")
-//    }
+    fun recognizeText(image:InputImage){
+        val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_main)
         setContentView(binding.root)
+
+        binding.tv.movementMethod = ScrollingMovementMethod()
 
         binding.btnSelectPhoto.setOnClickListener {
             TedImagePicker.with(this)
@@ -80,15 +64,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnRecogText.setOnClickListener {
-//                val result=recognizer.process(image)
-//                        .addOnSuccessListener {     result->
-//                            Log.e("SUCCESS","${result.text}")
-//                            mlText= result.text
-//                            binding.tv.text = mlText
-//                        }
-//                        .addOnFailureListener {     e->
-//                            Log.e("FAIL","error : $e")
-//                        }
+
             val result = recognizerKor.process(image)
                 .addOnSuccessListener { result->
                     Log.e("SUCCESS","${result.text}")
@@ -124,16 +100,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        binding.btnRecogObj.setOnClickListener {
-            Log.e("BUTTON","start detect object")
-            objectDetect.process(image)
-                .addOnSuccessListener {
-                    Log.e("OBJECT SUCCESS","${it[0]}")
-                }
-                .addOnFailureListener{  e->
-                    Log.e("OBJECT FAIL","fail object detect : $e")
-                }
-        }
+
 
 
 
@@ -143,7 +110,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    val objectDetect=ObjectDetection.getClient(options)
+
 
 
 
