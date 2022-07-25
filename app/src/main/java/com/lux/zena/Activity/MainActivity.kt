@@ -43,6 +43,15 @@ class MainActivity : AppCompatActivity() {
     fun recognizeText(image:InputImage){
         val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
+        val result = recognizer.process(image)
+            .addOnSuccessListener {
+                Log.e("TAG","SUCCESS")
+                mlText = it.text
+                binding.tv.text = mlText
+            }
+            .addOnFailureListener {
+                Log.e("TAG","FAIL : $it")
+            }
     }
 
 
@@ -65,19 +74,11 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnRecogText.setOnClickListener {
 
-            val result = recognizerKor.process(image)
-                .addOnSuccessListener { result->
-                    Log.e("SUCCESS","${result.text}")
-                    mlText = result.text
-                    binding.tv.text = mlText
-                }
-                .addOnFailureListener { e->
-                    Log.e("FAIL","error : $e")
-                }
-            if (result.isComplete) {
-                Log.e("RESULT","${result.result}")
-                binding.tv.text=result.result.toString()
-            }else Log.e("TASK","is not yet complete")
+            recognizeText(image)
+//            if (result.isComplete) {
+//                Log.e("RESULT","${result.result}")
+//                binding.tv.text=result.result.toString()
+//            }else Log.e("TASK","is not yet complete")
         }
 
         tts = TextToSpeech(this, TextToSpeech.OnInitListener { status->
