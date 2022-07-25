@@ -21,7 +21,8 @@
         android:textColor="@color/black"
         android:layout_below="@id/btn_select_photo"
         android:layout_marginTop="8dp"
-        android:text="recognize text"/>
+        android:text="recognize text"
+        android:visibility="invisible"/>
 
 
     <ImageView

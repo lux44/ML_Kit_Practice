@@ -11,6 +11,8 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeechService
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.loader.content.CursorLoader
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.languageid.LanguageIdentifier
@@ -70,11 +72,13 @@ class MainActivity : AppCompatActivity() {
                     binding.iv.setImageURI(it)
                     image= InputImage.fromFilePath(this,it)
                 }
+            if (image!=null) binding.btnRecogText.visibility = View.VISIBLE
         }
 
         binding.btnRecogText.setOnClickListener {
+            if (image!=null)    recognizeText(image)
+            else Toast.makeText(this, "이미지를 선택해 주세요", Toast.LENGTH_SHORT).show()
 
-            recognizeText(image)
 //            if (result.isComplete) {
 //                Log.e("RESULT","${result.result}")
 //                binding.tv.text=result.result.toString()
